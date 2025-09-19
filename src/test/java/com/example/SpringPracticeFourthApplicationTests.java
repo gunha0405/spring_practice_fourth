@@ -15,6 +15,7 @@ import com.example.answer.model.Answer;
 import com.example.answer.repository.AnswerRepository;
 import com.example.question.model.Question;
 import com.example.question.respository.QuestionRepository;
+import com.example.question.service.QuestionService;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -23,13 +24,9 @@ import lombok.RequiredArgsConstructor;
 class SpringPracticeFourthApplicationTests {
 	
 	@Autowired
-    private QuestionRepository questionRepository;
-	
-	@Autowired
-    private AnswerRepository answerRepository;
+	private QuestionService questionService;
 
     @Test
-    @Transactional
     void testJpa() {        
     	/*
     	  Question q1 = new Question();
@@ -94,14 +91,7 @@ class SpringPracticeFourthApplicationTests {
         assertTrue(oa.isPresent());
         Answer a = oa.get();
         assertEquals(2, a.getQuestion().getId());
-    	 *
-    	 */
-        
-    
-    	
-
- 
-        Optional<Question> oq = this.questionRepository.findById((long) 2);
+                Optional<Question> oq = this.questionRepository.findById((long) 2);
         assertTrue(oq.isPresent());
         Question q = oq.get();
 
@@ -109,6 +99,14 @@ class SpringPracticeFourthApplicationTests {
 
         assertEquals(1, answerList.size());
         assertEquals("네 자동으로 생성됩니다.", answerList.get(0).getContent());
+    	 *
+    	 */
+        
+    
+    	
+    	
+ 
+
 
         
     }
