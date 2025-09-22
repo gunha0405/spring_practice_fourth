@@ -51,4 +51,6 @@ public interface QuestionRepository extends JpaRepository<Question, Long>{
     	    ORDER BY MAX(c.createDate) DESC NULLS LAST
     	""")
     Page<Question> findQuestionsOrderByLatestComment(Pageable pageable);
+    
+    Page<Question> findByAuthorUsername(String username, Pageable pageable);
 }

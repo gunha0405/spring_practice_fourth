@@ -18,4 +18,6 @@ public interface AnswerRepository extends JpaRepository<Answer, Long>{
 	    Page<Answer> findByQuestionOrderByVoteCount(@Param("question") Question question, Pageable pageable);
 
 	 Page<Answer> findByQuestion(Question question, Pageable pageable);
+	 
+	 Page<Answer> findByAuthorUsername(String username, Pageable pageable);
 }
