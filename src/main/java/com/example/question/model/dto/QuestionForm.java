@@ -3,6 +3,7 @@ package com.example.question.model.dto;
 
 
 import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
@@ -16,5 +17,8 @@ public class QuestionForm {
 
     @NotEmpty(message="내용은 필수항목입니다.")
     private String content;
+    
+    @NotNull(message = "카테고리를 선택하세요")
+    private Long categoryId;
 }
 
