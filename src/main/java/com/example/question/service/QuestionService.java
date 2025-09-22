@@ -28,7 +28,7 @@ public class QuestionService {
 	private final CategoryRepository categoryRepository;
 	
 	public Page<Question> getList(int page, String kw, String filter) {
-        Pageable pageable = PageRequest.of(page, 10);
+		Pageable pageable = PageRequest.of(page, 10, Sort.by(Sort.Order.desc("createDate")));
 
         if ("answer".equals(filter)) {
             return questionRepository.findQuestionsOrderByLatestAnswer(pageable);

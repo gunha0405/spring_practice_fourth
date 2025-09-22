@@ -60,7 +60,14 @@
     <h5 class="border-bottom my-3 py-2" 
         th:text="|${#lists.size(question.answerList)}개의 답변이 있습니다.|"></h5>
     <!-- 답변 반복 시작 -->
-    <div class="card my-3" th:each="answer : ${question.answerList}">
+	<div class="d-flex justify-content-end mb-3">
+	    <label for="answer_sort" class="me-2">정렬:</label>
+	    <select id="answer_sort" class="form-select form-select-sm w-auto">
+	        <option value="new" th:selected="${sort == 'new'}">최신순</option>
+	        <option value="vote" th:selected="${sort == 'vote'}">추천순</option>
+	    </select>
+	</div>
+	<div class="card my-3" th:each="answer : ${answerPaging.content}">
 		<a th:id="|answer_${answer.id}|"></a>
         <div class="card-body">
             <div class="card-text" th:utext="${@commonUtil.markdown(answer.content)}"></div>
@@ -114,6 +121,26 @@
         </div>
     </div>
     <!-- 답변 반복 끝  -->
+	<div th:if="${!answerPaging.isEmpty()}">
+	        <ul class="pagination justify-content-center">
+	            <li class="page-item" th:classappend="${!answerPaging.hasPrevious} ? 'disabled'">
+	                <a class="page-link"
+	                   th:href="@{|/question/detail/${question.id}?page=${answerPaging.number-1}&sort=${sort}|}">이전</a>
+	            </li>
+	            <li th:each="p : ${#numbers.sequence(0, answerPaging.totalPages-1)}"
+	                th:if="${p >= answerPaging.number-2 and p <= answerPaging.number+2}"
+	                th:classappend="${p == answerPaging.number} ? 'active'"
+	                class="page-item">
+	                <a class="page-link"
+	                   th:href="@{|/question/detail/${question.id}?page=${p}&sort=${sort}|}"
+	                   th:text="${p}"></a>
+	            </li>
+	            <li class="page-item" th:classappend="${!answerPaging.hasNext} ? 'disabled'">
+	                <a class="page-link"
+	                   th:href="@{|/question/detail/${question.id}?page=${answerPaging.number+1}&sort=${sort}|}">다음</a>
+	            </li>
+	        </ul>
+	    </div>
     <!-- 답변 작성 -->
 	<form th:action="@{|/answer/create/${question.id}|}" th:object="${answerForm}" method="post" class="my-3">
 	        <div th:replace="~{form_errors :: formErrorsFragment}"></div>
@@ -138,6 +165,14 @@ Array.from(recommend_elements).forEach(function(element) {
             location.href = this.dataset.uri;
         };
     });
+});
+
+document.getElementById("answer_sort").addEventListener("change", function() {
+    const sort = this.value;
+    const url = new URL(window.location.href);
+    url.searchParams.set("sort", sort);
+    url.searchParams.set("page", 0); 
+    window.location.href = url.toString();
 });
 </script>
 </html>
