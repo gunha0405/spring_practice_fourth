@@ -17,6 +17,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.example.answer.model.dto.AnswerForm;
+import com.example.category.Category;
+import com.example.category.CategoryService;
 import com.example.question.model.Question;
 import com.example.question.model.dto.QuestionForm;
 import com.example.question.service.QuestionService;
@@ -35,14 +37,16 @@ public class QuestionController {
 	
 	private final UserService userService;
 	
-	 @GetMapping("/list")
-	    public String list(Model model, @RequestParam(value = "page", defaultValue = "0") int page,
-	            @RequestParam(value = "kw", defaultValue = "") String kw) {
-	        Page<Question> paging = this.questionService.getList(page, kw);
-	        model.addAttribute("paging", paging);
-	        model.addAttribute("kw", kw);
-	        return "question_list";
-	    }
+	private final CategoryService categoryService;
+	
+	@GetMapping("/list")
+	public String list(Model model, @RequestParam(value = "page", defaultValue = "0") int page,
+	        @RequestParam(value = "kw", defaultValue = "") String kw) {
+	    Page<Question> paging = this.questionService.getList(page, kw);
+	    model.addAttribute("paging", paging);
+	    model.addAttribute("kw", kw);
+	    return "question_list";
+	}
 	
 	@GetMapping(value = "/detail/{id}")
     public String detail(Model model, @PathVariable("id") Long id, AnswerForm answerForm) {
@@ -51,21 +55,26 @@ public class QuestionController {
         return "question_detail";
     }
 	
+	@GetMapping(value = "/create")
 	@PreAuthorize("isAuthenticated()")
-	@GetMapping("/create")
-    public String questionCreate(QuestionForm questionForm) {
+	public String questionCreate(QuestionForm questionForm, Model model) {
+		List<Category> categories = this.categoryService.getAllCategories();
+        model.addAttribute("categories", categories);
         return "question_form";
     }
 	
-	@PreAuthorize("isAuthenticated()")
 	@PostMapping("/create")
-    public String questionCreate(@Valid QuestionForm questionForm, BindingResult bindingResult, Principal principal) {
+    public String questionCreate(@Valid QuestionForm questionForm, BindingResult bindingResult, Principal principal, Model model) {
         if (bindingResult.hasErrors()) {
+            model.addAttribute("categories", categoryService.getAllCategories());
             return "question_form";
         }
-        SiteUser user = this.userService.getUser(principal.getName());
-        this.questionService.create(questionForm.getSubject(), questionForm.getContent(), user);
-        return "redirect:/question/list";
+        SiteUser siteUser = this.userService.getUser(principal.getName());
+        if (siteUser != null) {
+            this.questionService.create(questionForm.getSubject(), questionForm.getContent(), questionForm.getCategoryId(), siteUser);
+            return "redirect:/question/list";
+        }
+        throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
     }
 	
 	@PreAuthorize("isAuthenticated()")

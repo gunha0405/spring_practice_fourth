@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Set;
 
 import com.example.answer.model.Answer;
+import com.example.category.Category;
 import com.example.comment.model.Comment;
 import com.example.user.model.SiteUser;
 
@@ -49,4 +50,7 @@ public class Question {
     
     @OneToMany(mappedBy = "question")
     private List<Comment> commentList;
+    
+    @ManyToOne
+    private Category category;
 }

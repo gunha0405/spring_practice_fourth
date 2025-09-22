@@ -11,6 +11,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import com.example.category.Category;
+import com.example.category.CategoryRepository;
 import com.example.exception.DataNotFoundException;
 import com.example.question.model.Question;
 import com.example.question.respository.QuestionRepository;
@@ -22,6 +24,8 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class QuestionService {
 	private final QuestionRepository questionRepository;
+	
+	private final CategoryRepository categoryRepository;
 	
 	public Page<Question> getList(int page, String kw) {
         List<Sort.Order> sorts = new ArrayList<>();
@@ -40,12 +44,16 @@ public class QuestionService {
     }
 	
 	
-	public void create(String subject, String content, SiteUser author) {
-        Question q = new Question();
+	public void create(String subject, String content, Long categoryId, SiteUser user) {
+    	Question q = new Question();
         q.setSubject(subject);
         q.setContent(content);
-        q.setAuthor(author);
+        q.setAuthor(user);
         q.setCreateDate(LocalDateTime.now());
+        if (categoryId != null) {
+            Optional<Category> category = categoryRepository.findById(categoryId);
+            q.setCategory(category.orElse(null));
+        }
         this.questionRepository.save(q);
     }
 	
