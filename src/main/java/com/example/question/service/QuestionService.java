@@ -1,6 +1,8 @@
 package com.example.question.service;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.domain.Page;
@@ -8,10 +10,13 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.example.category.Category;
 import com.example.category.CategoryRepository;
 import com.example.exception.DataNotFoundException;
+import com.example.file.model.FileMetaData;
+import com.example.file.service.FileService;
 import com.example.question.model.Question;
 import com.example.question.respository.QuestionRepository;
 import com.example.user.model.SiteUser;
@@ -23,6 +28,7 @@ import lombok.RequiredArgsConstructor;
 public class QuestionService {
     private final QuestionRepository questionRepository;
     private final CategoryRepository categoryRepository;
+    private final FileService fileService;
 
     public Page<Question> getList(int page, String kw, String filter) {
         Pageable pageable = PageRequest.of(page, 10, Sort.by(Sort.Order.desc("createDate")));
@@ -43,19 +49,22 @@ public class QuestionService {
         return question;
     }
 
-    public void create(String subject, String content, Long categoryId, SiteUser user) {
-        Question q = new Question();
+    public void create(String subject, String content, Long categoryId, List<MultipartFile> files, SiteUser user) throws IOException {
+    	Question q = new Question();
         q.setSubject(subject);
         q.setContent(content);
         q.setAuthor(user);
+        q.setViewCount(0);
         q.setCreateDate(LocalDateTime.now());
-
         if (categoryId != null) {
             Optional<Category> category = categoryRepository.findById(categoryId);
             q.setCategory(category.orElse(null));
         }
-
-        this.questionRepository.save(q);
+        Question savedQ = questionRepository.save(q);
+        
+        List<FileMetaData> fileList = fileService.saveFiles(files, "question", savedQ);
+        savedQ.getFiles().addAll(fileList);
+        
     }
 
     public void modify(Question question, String subject, String content, SiteUser currentUser) {

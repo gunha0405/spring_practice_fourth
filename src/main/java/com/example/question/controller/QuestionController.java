@@ -1,5 +1,6 @@
 package com.example.question.controller;
 
+import java.io.IOException;
 import java.security.Principal;
 import java.util.List;
 
@@ -9,6 +10,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.example.answer.model.Answer;
 import com.example.answer.model.dto.AnswerForm;
@@ -74,22 +76,31 @@ public class QuestionController {
     public String questionCreate(@Valid QuestionForm questionForm,
                                  BindingResult bindingResult,
                                  Principal principal,
-                                 Model model) {
-        if (bindingResult.hasErrors()) {
-            model.addAttribute("categories", categoryService.getAllCategories());
-            return "question_form";
-        }
+                                 @RequestParam("files") List<MultipartFile> files, 
+                                 Model model) throws IOException {
+    	try {
+            if (bindingResult.hasErrors()) {
+                model.addAttribute("categories", categoryService.getAllCategories());
+                return "question_form";
+            }
 
-        SiteUser siteUser = this.userService.getUser(principal.getName());
-        if (siteUser == null) {
-            throw new BusinessException("error.user.notFound");
-        }
+            SiteUser siteUser = this.userService.getUser(principal.getName());
+            if (siteUser == null) {
+                throw new BusinessException("error.user.notFound");
+            }
 
-        this.questionService.create(questionForm.getSubject(),
-                                    questionForm.getContent(),
-                                    questionForm.getCategoryId(),
-                                    siteUser);
-        return "redirect:/question/list";
+            this.questionService.create(
+                questionForm.getSubject(),
+                questionForm.getContent(),
+                questionForm.getCategoryId(),
+                files,
+                siteUser
+            );
+            return "redirect:/question/list";
+        } catch (Exception e) {
+            e.printStackTrace(); // 무슨 예외인지 먼저 확인
+            throw e;
+        }
     }
 
     @PreAuthorize("isAuthenticated()")
