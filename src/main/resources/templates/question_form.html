@@ -8,6 +8,14 @@
             <label for="subject" class="form-label">제목</label>
             <input type="text" th:field="*{subject}" class="form-control">
         </div>
+		<div class="mb-3">
+			<label for="category" class="form-label">카테고리</label>
+			<select th:field="*{categoryId}" class="form-select">
+				<option value="" disabled selected>카테고리를 선택하세요</option>
+				<option th:each="c : ${categories}" th:value="${c.id}" th:text="${c.name}"></option>
+			</select>
+			<div class="text-danger" th:if="${#fields.hasErrors('categoryId')}" th:errors="*{categoryId}"></div>
+		</div>
         <div class="mb-3">
             <label for="content" class="form-label">내용</label>
             <textarea th:field="*{content}" class="form-control" rows="10"></textarea>
