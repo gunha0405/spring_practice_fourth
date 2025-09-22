@@ -42,7 +42,9 @@ public class QuestionService {
 	public Question getQuestion(Long id) {  
         Optional<Question> question = this.questionRepository.findById(id);
         if (question.isPresent()) {
-            return question.get();
+        	Question q = question.get();
+        	q.setViewCount(q.getViewCount()+1);
+            return q;
         } else {
             throw new DataNotFoundException("question not found");
         }

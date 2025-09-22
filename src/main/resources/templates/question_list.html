@@ -24,6 +24,7 @@
 			    <th>번호</th>
 			    <th style="width:35%">제목</th>
 				<th style="width:15%">카테고리</th>
+				<th>조회수</th>
 			    <th>글쓴이</th>
 			    <th>작성일시</th>
 			</tr>
@@ -38,6 +39,7 @@
 			        </span>
 			    </td>
 				<td th:text="${question.category != null ? question.category.name : '없음'}"></td>
+				<td th:text="${question.viewCount}"></td>
 			    <td><span th:if="${question.author != null}" th:text="${question.author.username}"></span></td>
 			    <td th:text="${#temporals.format(question.createDate, 'yyyy-MM-dd HH:mm')}"></td>
 			</tr>
