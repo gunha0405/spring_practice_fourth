@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Set;
 
 import com.example.answer.model.Answer;
+import com.example.comment.model.Comment;
 import com.example.user.model.SiteUser;
 
 import jakarta.persistence.CascadeType;
@@ -45,4 +46,7 @@ public class Question {
     
     @ManyToMany
     Set<SiteUser> voter;
+    
+    @OneToMany(mappedBy = "question")
+    private List<Comment> commentList;
 }

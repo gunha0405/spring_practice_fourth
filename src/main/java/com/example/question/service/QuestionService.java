@@ -39,6 +39,7 @@ public class QuestionService {
         }
     }
 	
+	
 	public void create(String subject, String content, SiteUser author) {
         Question q = new Question();
         q.setSubject(subject);
