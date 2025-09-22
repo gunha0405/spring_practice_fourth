@@ -8,4 +8,5 @@ import com.example.user.model.SiteUser;
 
 public interface UserRepository extends JpaRepository<SiteUser, Long>{
 	Optional<SiteUser> findByusername(String username);
+	Optional<SiteUser> findByEmail(String email);
 }
