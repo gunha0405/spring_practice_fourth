@@ -26,7 +26,8 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(BusinessException.class)
     public String handleBusinessException(BusinessException ex, Locale locale, Model model) {
         String msg = getMessage(ex.getMessageKey(), ex.getMessage(), locale);
-        model.addAttribute("error", new ErrorView(HttpStatus.BAD_REQUEST.value(), msg, LocalDateTime.now()));
+        model.addAttribute("errorView",
+                new ErrorView(HttpStatus.BAD_REQUEST.value(), msg, LocalDateTime.now()));
         return "error";
     }
 
@@ -34,7 +35,17 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(DataNotFoundException.class)
     public String handleDataNotFound(DataNotFoundException ex, Locale locale, Model model) {
         String msg = getMessage("error.data.notFound", "Data not found", locale);
-        model.addAttribute("error", new ErrorView(HttpStatus.NOT_FOUND.value(), msg, LocalDateTime.now()));
+        model.addAttribute("errorView",
+                new ErrorView(HttpStatus.NOT_FOUND.value(), msg, LocalDateTime.now()));
+        return "error";
+    }
+
+    // 파일 예외 처리
+    @ExceptionHandler(FileException.class)
+    public String handleFileException(FileException ex, Locale locale, Model model) {
+        String msg = messageSource.getMessage(ex.getMessageKey(), null, locale);
+        model.addAttribute("errorView",
+                new ErrorView(HttpStatus.BAD_REQUEST.value(), msg, LocalDateTime.now()));
         return "error";
     }
 
@@ -42,7 +53,8 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(Exception.class)
     public String handleGenericException(Exception ex, Locale locale, Model model) {
         String msg = getMessage("error.internal", "Internal server error", locale);
-        model.addAttribute("error", new ErrorView(HttpStatus.INTERNAL_SERVER_ERROR.value(), msg, LocalDateTime.now()));
+        model.addAttribute("errorView",
+                new ErrorView(HttpStatus.INTERNAL_SERVER_ERROR.value(), msg, LocalDateTime.now()));
         return "error";
     }
 }

@@ -1,12 +1,14 @@
 package com.example.question.model;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
 import com.example.answer.model.Answer;
 import com.example.category.Category;
 import com.example.comment.model.Comment;
+import com.example.file.model.FileMetaData;
 import com.example.user.model.SiteUser;
 
 import jakarta.persistence.CascadeType;
@@ -56,4 +58,7 @@ public class Question {
     
     @ManyToOne
     private Category category;
+    
+    @OneToMany(mappedBy = "question")
+    private List<FileMetaData> files = new ArrayList<>();
 }
